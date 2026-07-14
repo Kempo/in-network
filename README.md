@@ -6,7 +6,7 @@ Welcome to **In-Network**, an MCP server that enables agents to check whether a 
 
 WIP
 
-## Pre-requisites
+## Prerequisites
 
 Before running `npm run setup`, make sure you have these installed:
 
