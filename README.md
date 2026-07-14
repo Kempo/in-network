@@ -34,7 +34,7 @@ The app reads its config from `.env`. The defaults work out of the box — the o
 
 Install project dependencies with:
 ```
-npm run setu
+npm run setup
 ```
 
 After that runs, you can run the API, agent, and MCP server all-in-one here:
