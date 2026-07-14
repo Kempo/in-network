@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "providers_npi_uniq" ON "providers" USING btree ("npi") WHERE "providers"."npi" is not null;

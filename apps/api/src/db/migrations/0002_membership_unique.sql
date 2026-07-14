@@ -1,0 +1,1 @@
+ALTER TABLE "network_memberships" ADD CONSTRAINT "network_memberships_provider_network_plan_uniq" UNIQUE NULLS NOT DISTINCT("provider_id","network_id","plan_id");

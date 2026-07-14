@@ -1,0 +1,1 @@
+ALTER TABLE "providers" ALTER COLUMN "address_id" SET NOT NULL;

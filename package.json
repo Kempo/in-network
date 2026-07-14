@@ -1,0 +1,13 @@
+{
+  "name": "in-network",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["mcp", "apps/api"],
+  "scripts": {
+    "setup": "npm install && docker compose pull && (cd apps/agent && uv sync && uv run playwright install chromium)",
+    "dev": "docker compose up",
+    "dev:api": "npm run dev -w apps/api",
+    "dev:agent": "uv run --directory apps/agent uvicorn app.main:app --reload --port 8000",
+    "db:reset": "docker compose down -v && docker compose up -d --wait db && npm run db:migrate -w apps/api && npm run db:seed -w apps/api"
+  }
+}
