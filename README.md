@@ -6,7 +6,7 @@ Welcome to **In-Network**, an MCP server that enables agents to check whether a 
 
 WIP
 
-## Getting Started
+## Pre-requisites
 
 Before running `npm run setup`, make sure you have these installed:
 
@@ -30,13 +30,14 @@ The app reads its config from `.env`. The defaults work out of the box — the o
 | `API_PORT` / `AGENT_PORT` | Ports for the API (Hono) and agent (FastAPI). | `3000` / `8000` |
 | `API_URL` / `AGENT_URL` | Where the services find each other. | `http://localhost:3000` / `http://localhost:8000` |
 
-Setup the app!
-```
-npm run setup
-```
-
 ## Running the app locally
 
+Install project dependencies with:
+```
+npm run setu
+```
+
+After that runs, you can run the API, agent, and MCP server all-in-one here:
 ```
 npm run dev
 ```
@@ -68,7 +69,6 @@ flowchart TD
 
     db[("Postgres<br/>carriers, networks, plans, providers,<br/>addresses, memberships, agent_runs")]
     npi["CMS NPI registry (web)"]
-    llm["LLM<br/>(parsing + browsing)"]
     directory["Carrier provider<br/>directory (web)"]
 
     client --> t1 & t2 & t3 & t4
@@ -79,7 +79,6 @@ flowchart TD
     r2 -->|no local match| npi
     r4 -->|spawn run| bu
     bu --> chromium
-    bu -->|reasoning| llm
     chromium -->|browse| directory
     bu -->|structured findings| r4
     r1 & r2 & r3 & r4 -->|read/write| db
