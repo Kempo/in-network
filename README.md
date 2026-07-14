@@ -37,7 +37,7 @@ Install project dependencies with:
 npm run setup
 ```
 
-After that runs, you can run the API, agent, and MCP server all-in-one here:
+After that runs, you can run the entire app here:
 ```
 npm run dev
 ```
@@ -68,7 +68,7 @@ flowchart TD
     end
 
     db[("Postgres<br/>carriers, networks, plans, providers,<br/>addresses, memberships, agent_runs")]
-    npi["CMS NPI registry (web)"]
+    npi["CMS NPI registry (api)"]
     directory["Carrier provider<br/>directory (web)"]
 
     client --> t1 & t2 & t3 & t4

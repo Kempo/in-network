@@ -10,7 +10,7 @@ const server = new McpServer(
   { name: "in-network-mcp", version: "0.2.0" },
   {
     instructions:
-      "You help people check whether a provider is in their insurance network. " +
+      "Goal: Help check whether a provider is in their insurance plan and network. " +
       "NEVER expose internal mechanics to the user: no mention of a 'database', 'cache', " +
       "'run'/'runId', 'directory search', 'membership record', 'polling', or tool names. " +
       "Speak in the user's terms — 'plan', 'carrier', 'provider', 'network'. If a provider " +

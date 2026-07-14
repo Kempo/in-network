@@ -35,9 +35,6 @@ export function buildExplorePrompt(p: {
     `- To reach a specific card or message, prefer scroll_to_text over paging. Scroll only ` +
       `~1 page at a time; never hunt by scrolling many pages (you overshoot to the footer).`,
     `Return status in_network, out_of_network, or inconclusive; the provider's confirmed ` +
-      `name, NPI, full address line, city, and state; and scope_hint network_level unless the ` +
-      `result is clearly plan-specific. If the results list loaded with no matching card, ` +
-      `return out_of_network. If the site errored and could not return results after one ` +
-      `retry, return inconclusive. Either way include the searched name and the location you used.`,
+      `name, NPI, full address line, city, and state.`
   ].join("\n");
 }
