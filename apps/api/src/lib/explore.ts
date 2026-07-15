@@ -1,10 +1,11 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "../db/client.js";
-import { addresses, networks, plans, providers, providerDirectories, networkMemberships } from "../db/schema.js";
+import { networks, plans, providerDirectories, networkMemberships } from "../db/schema.js";
 import { callBrowserUse, type Findings } from "./agent.js";
 import { createRun, markProcessing, markFinished, markFailed } from "./runs.js";
 import { buildExplorePrompt } from "./prompt.js";
 import { insertProvider } from "./providers.js";
+import { getProviderById } from "../match/provider.js";
 import { ResolveError } from "./errors.js";
 
 export type ExploreInput = {
@@ -32,9 +33,11 @@ export async function startExplore(input: ExploreInput): Promise<{ runId: number
   if (!dir) throw new ResolveError(`No directory for carrier ${input.carrierId}`);
 
   let planTitle: string;
+  let plan: typeof plans.$inferSelect | undefined;
   if (input.planId) {
     const [pl] = await db.select().from(plans).where(eq(plans.id, input.planId)).limit(1);
     if (!pl) throw new ResolveError(`Unknown plan: ${input.planId}`);
+    plan = pl;
     planTitle = pl.title;
   } else if (input.planName && sanitizePlanName(input.planName)) {
     planTitle = sanitizePlanName(input.planName);
@@ -44,14 +47,12 @@ export async function startExplore(input: ExploreInput): Promise<{ runId: number
 
   let descriptor: { name: string; address?: string };
   if (input.providerId) {
-    const [row] = await db
-      .select({ p: providers, a: addresses })
-      .from(providers)
-      .innerJoin(addresses, eq(providers.addressId, addresses.id))
-      .where(eq(providers.id, input.providerId))
-      .limit(1);
-    if (!row) throw new ResolveError(`Unknown provider: ${input.providerId}`);
-    descriptor = { name: row.p.name, address: [row.a.line1, row.a.locality, row.a.state].filter(Boolean).join(", ") };
+    const match = await getProviderById(input.providerId);
+    if (!match) throw new ResolveError(`Unknown provider: ${input.providerId}`);
+    descriptor = {
+      name: match.provider.name,
+      address: [match.address.line1, match.address.locality, match.address.state].filter(Boolean).join(", "),
+    };
   } else if (input.name) {
     descriptor = { name: input.name, address: [input.city, input.state].filter(Boolean).join(", ") };
   } else {
@@ -60,11 +61,17 @@ export async function startExplore(input: ExploreInput): Promise<{ runId: number
 
   const prompt = buildExplorePrompt({ directoryUrl: dir.url, instructions: dir.instructions, planTitle, location, descriptor });
   const run = await createRun(prompt);
-  void runExplore(run.id, input, prompt, planTitle);
+  void runExplore(run.id, input, prompt, planTitle, plan);
   return { runId: run.id };
 }
 
-async function runExplore(runId: number, input: ExploreInput, prompt: string, planTitle: string): Promise<void> {
+async function runExplore(
+  runId: number,
+  input: ExploreInput,
+  prompt: string,
+  planTitle: string,
+  plan?: typeof plans.$inferSelect
+): Promise<void> {
   await markProcessing(runId);
   let findings: Findings;
   try {
@@ -91,7 +98,7 @@ async function runExplore(runId: number, input: ExploreInput, prompt: string, pl
           state: findings.provider.state,
         })
       ).id;
-    const { planId, networkId } = await resolvePlan(input, planTitle);
+    const { planId, networkId } = await resolvePlan(input, planTitle, plan);
     const now = new Date();
     await db
       .insert(networkMemberships)
@@ -112,11 +119,12 @@ async function runExplore(runId: number, input: ExploreInput, prompt: string, pl
   }
 }
 
-async function resolvePlan(input: ExploreInput, planTitle: string): Promise<{ planId: number; networkId: number }> {
-  if (input.planId) {
-    const [pl] = await db.select().from(plans).where(eq(plans.id, input.planId)).limit(1);
-    return { planId: pl.id, networkId: pl.networkId };
-  }
+async function resolvePlan(
+  input: ExploreInput,
+  planTitle: string,
+  plan?: typeof plans.$inferSelect
+): Promise<{ planId: number; networkId: number }> {
+  if (plan) return { planId: plan.id, networkId: plan.networkId };
   let [net] = await db
     .select()
     .from(networks)
