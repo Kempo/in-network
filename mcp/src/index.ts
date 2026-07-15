@@ -15,7 +15,10 @@ const server = new McpServer(
       "'run'/'runId', 'directory search', 'membership record', 'polling', or tool names. " +
       "Speak in the user's terms — 'plan', 'carrier', 'provider', 'network'. If a provider " +
       "isn't on file, don't explain why; just ask for what you need (carrier, plan, location) " +
-      "and note the check may take a minute once you have it.",
+      "and note the check may take a minute once you have it. When only one candidate/match " +
+      "comes back (e.g. a single carrier, plan, or provider), don't present it as a multiple-" +
+      "choice question — state it directly and confirm ('Is this your plan: X?') or just " +
+      "proceed with it.",
   },
 );
 const text = (v: unknown) => ({ content: [{ type: "text" as const, text: JSON.stringify(v) }] });
@@ -87,7 +90,7 @@ server.registerTool(
   {
     title: "Search Provider Online",
     description:
-      "Look up a provider with the insurer and save the result. Requires carrierId (use find_carrier; ASK the user if unknown), a plan reference (planId when find_plan matched, otherwise planName), and a location to search (ASK the user if not given). Provide providerId if find_provider matched, else name (+city/state). Returns {runId}; poll get_search_status until finished.",
+      "Call check_provider_plan to make sure there is no mapping first. Look up a provider with the insurer and save the result. Requires carrierId (use find_carrier; ASK the user if unknown), a plan reference (planId when find_plan matched, otherwise planName), and a location to search (ASK the user if not given). Provide providerId if find_provider matched, else name (+city/state). Returns {runId}; poll get_search_status until finished.",
     inputSchema: {
       carrierId: z.number(),
       planId: z.number().optional(),
