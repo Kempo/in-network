@@ -2,7 +2,9 @@
 
 Welcome to **In-Network**, an MCP server that enables agents to check whether a physician you want to see is in-network with your health insurance.
 
-## Demo
+[Click here for a full demo (watch on 2x!)](https://screen.studio/share/247mUfcO)
+
+## The Basics
 
 ![In-Network demo](./demo.gif)
 
