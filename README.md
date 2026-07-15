@@ -4,7 +4,7 @@ Welcome to **In-Network**, an MCP server that enables agents to check whether a 
 
 ## Demo
 
-![In-Network demo](./in-network.gif)
+![In-Network demo](./demo.gif)
 
 ## Prerequisites
 
