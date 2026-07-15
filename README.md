@@ -12,13 +12,13 @@ Before running `npm run setup`, make sure you have these installed:
 
 | Tool | Why it's needed | Install |
 | --- | --- | --- |
-| **Node.js 24** (with npm) | Runs the MCP server, the API, and `npm run setup` itself. | [nodejs.org](https://nodejs.org) or `brew install node` |
+| **Node.js 24** (with npm) | Runs the API and `npm run setup`. | [nodejs.org](https://nodejs.org) or `brew install node` |
 | **Docker + Docker Compose** | Runs the Postgres database. | [OrbStack](https://orbstack.dev) (lighter, recommended) or [Docker Desktop](https://www.docker.com/products/docker-desktop/) |
 | **uv** | Python package manager for the browser agent (pulls Python 3.11+ for you). | `brew install uv` or [astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/) |
 
 Create your local env file `.env` following the `.env.example`.
 
-The app reads its config from `.env`. The defaults work out of the box — the only thing you *must* set yourself is `ANTHROPIC_API_KEY`:
+The app reads its config from `.env`. The defaults work out of the box but the only thing you *must* set yourself is `ANTHROPIC_API_KEY`:
 
 | Variable | What it's for | Default |
 | --- | --- | --- |
