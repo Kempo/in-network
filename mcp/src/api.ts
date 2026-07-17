@@ -1,8 +1,14 @@
+export class ApiError extends Error {
+  constructor(public status: number, public body: any) {
+    super(body?.error ?? `api error ${status}`);
+  }
+}
+
 const base = () => process.env.API_URL ?? "http://localhost:3000";
 
 async function get(path: string): Promise<any> {
   const res = await fetch(`${base()}${path}`);
-  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `api error ${res.status}`);
+  if (!res.ok) throw new ApiError(res.status, await res.json().catch(() => ({})));
   return res.json();
 }
 
@@ -12,7 +18,7 @@ async function post(path: string, body: unknown): Promise<any> {
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `api error ${res.status}`);
+  if (!res.ok) throw new ApiError(res.status, await res.json().catch(() => ({})));
   return res.json();
 }
 
@@ -30,16 +36,24 @@ export const findProviders = (name: string, city?: string, state?: string, limit
   get(`/providers${qs({ name, city, state, limit, offset })}`);
 export const saveProvider = (npi: string, city?: string, state?: string) =>
   post(`/providers`, { npi, city, state });
-export const checkProviderPlan = (providerId: number, planId: number) =>
-  get(`/verify${qs({ providerId, planId })}`);
 export const searchProvider = (body: {
-  carrierId: number;
+  carrierId?: number;
   planId?: number;
   planName?: string;
   providerId?: number;
   name?: string;
-  location: string;
+  location?: string;
   city?: string;
   state?: string;
-}) => post(`/providers/explore`, body);
+}) =>
+  post(`/providers/explore`, body).catch((e) => {
+    if (
+      e instanceof ApiError &&
+      e.status === 422 &&
+      e.body?.error === "missing_inputs" &&
+      Array.isArray(e.body.missing)
+    )
+      return e.body;
+    throw e;
+  });
 export const getSearchStatus = (runId: number) => get(`/providers/explore/${runId}`);
