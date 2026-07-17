@@ -1,0 +1,22 @@
+[
+  { "speaker": "agent", "started_at": 0, "ended_at": 2600, "text": "Thank you for calling Apex Health member services, this is Dana. How can I help you today?" },
+  { "speaker": "customer", "started_at": 3000, "ended_at": 6200, "text": "Hi Dana, I wanted to check if Dr. Feigenbaum is in network with my plan." },
+  { "speaker": "agent", "started_at": 6600, "ended_at": 9000, "text": "Happy to check that for you. Can I grab your member ID to pull up your plan?" },
+  { "speaker": "customer", "started_at": 9400, "ended_at": 13000, "text": "Sure, it's A-X 4-4-8-2-1-0-9-3." },
+  { "speaker": "agent", "started_at": 13400, "ended_at": 15800, "text": "Thank you. And your date of birth to verify the account?" },
+  { "speaker": "customer", "started_at": 16100, "ended_at": 18200, "text": "March 14th, 1988." },
+  { "speaker": "agent", "started_at": 18600, "ended_at": 21600, "text": "Perfect, you're verified. Give me one moment to look up Dr. Feigenbaum." },
+  { "speaker": "agent", "started_at": 27000, "ended_at": 30800, "text": "Okay, I see a Dr. Rachel Feigenbaum, dermatology, on Maple Street. Is that the one?" },
+  { "speaker": "customer", "started_at": 31100, "ended_at": 33200, "text": "Yes, that's her." },
+  { "speaker": "agent", "started_at": 33600, "ended_at": 37400, "text": "Great news, Dr. Feigenbaum is in network on your Gold PPO plan." },
+  { "speaker": "customer", "started_at": 37000, "ended_at": 39000, "text": "Oh, wonderful, that's such a relief to hear." },
+  { "speaker": "agent", "started_at": 39400, "ended_at": 43200, "text": "So you'll only owe your specialist copay, which is thirty dollars per visit." },
+  { "speaker": "customer", "started_at": 43600, "ended_at": 46000, "text": "Good to know. Do I need a referral to see her?" },
+  { "speaker": "agent", "started_at": 46400, "ended_at": 49800, "text": "On the PPO, no referral needed, you can book directly." },
+  { "speaker": "customer", "started_at": 50200, "ended_at": 52200, "text": "Perfect. And is she accepting new patients?" },
+  { "speaker": "agent", "started_at": 52600, "ended_at": 56000, "text": "She is. I can text you her office number if you'd like." },
+  { "speaker": "customer", "started_at": 56300, "ended_at": 58000, "text": "Yes please, that would be great." },
+  { "speaker": "agent", "started_at": 57800, "ended_at": 61600, "text": "Done, it's on the way to the number on file. Anything else I can help with?" },
+  { "speaker": "customer", "started_at": 62000, "ended_at": 63600, "text": "No, that's everything. Thank you so much!" },
+  { "speaker": "agent", "started_at": 64000, "ended_at": 67000, "text": "You're welcome. Take care and have a great day." }
+]

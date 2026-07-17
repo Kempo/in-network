@@ -2,7 +2,7 @@
   "name": "in-network",
   "private": true,
   "version": "0.1.0",
-  "workspaces": ["mcp", "apps/api"],
+  "workspaces": ["mcp", "apps/api", "apps/web"],
   "scripts": {
     "setup": "npm install && docker compose pull && (cd apps/agent && uv sync && uv run playwright install chromium)",
     "dev": "docker compose up",

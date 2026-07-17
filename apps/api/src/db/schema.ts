@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, serial, text, integer, timestamp, jsonb, unique, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, serial, text, integer, boolean, timestamp, jsonb, unique, uniqueIndex } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 export const membershipStatus = pgEnum("membership_status", ["in_network", "out_of_network"]);
@@ -92,6 +92,47 @@ export const networkMemberships = pgTable(
   ],
 );
 
+export const speechRole = pgEnum("speech_role", ["user", "agent"]);
+
+export const transcripts = pgTable("transcripts", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  preview: text("preview").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const speechSegments = pgTable("speech_segments", {
+  id: serial("id").primaryKey(),
+  transcriptId: integer("transcript_id").notNull().references(() => transcripts.id),
+  text: text("text").notNull(),
+  role: speechRole("role").notNull(),
+  startedAt: integer("started_at").notNull(),
+  endedAt: integer("ended_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const transcriptAnalysis = pgTable("transcript_analysis", {
+  id: serial("id").primaryKey(),
+  transcriptId: integer("transcript_id").notNull().references(() => transcripts.id),
+  totalConversationTime: integer("total_conversation_time").notNull(),
+  totalTalkingTime: integer("total_talking_time").notNull(),
+  numberOfInterruptions: integer("number_of_interruptions").notNull(),
+  totalSilence: integer("total_silence").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const anomalyType = pgEnum("anomaly_type", ["interruption", "silence"]);
+
+export const conversationAnomalies = pgTable("conversation_anomalies", {
+  id: serial("id").primaryKey(),
+  speechSegmentId: integer("speech_segment_id").notNull().references(() => speechSegments.id),
+  type: anomalyType("type").notNull(),
+  actionable: boolean("actionable").notNull(),
+  reason: text("reason").notNull(),
+  recommendation: text("recommendation"), // null when not actionable
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type Carrier = typeof carriers.$inferSelect;
 export type Network = typeof networks.$inferSelect;
 export type Plan = typeof plans.$inferSelect;
@@ -99,3 +140,7 @@ export type Provider = typeof providers.$inferSelect;
 export type ProviderDirectory = typeof providerDirectories.$inferSelect;
 export type NetworkMembership = typeof networkMemberships.$inferSelect;
 export type AgentRun = typeof agentRuns.$inferSelect;
+export type Transcript = typeof transcripts.$inferSelect;
+export type SpeechSegment = typeof speechSegments.$inferSelect;
+export type TranscriptAnalysis = typeof transcriptAnalysis.$inferSelect;
+export type ConversationAnomaly = typeof conversationAnomalies.$inferSelect;
