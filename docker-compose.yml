@@ -57,5 +57,19 @@ services:
       retries: 20
       start_period: 10s
 
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.dev
+    environment:
+      API_PROXY_TARGET: http://api:3000
+    volumes:
+      - ./apps/web:/app/apps/web
+      - /app/apps/web/node_modules  # anonymous volume: keep the image's Linux-native deps (e.g. esbuild), don't let the host mount clobber
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"
+
 volumes:
   pgdata:

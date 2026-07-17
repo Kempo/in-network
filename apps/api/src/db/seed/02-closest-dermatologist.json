@@ -1,0 +1,23 @@
+[
+  { "speaker": "agent", "started_at": 0, "ended_at": 2800, "text": "Apex Health, this is Marcus. What can I do for you?" },
+  { "speaker": "customer", "started_at": 3200, "ended_at": 6600, "text": "Hey, I'm trying to find the closest dermatologist that takes my insurance." },
+  { "speaker": "agent", "started_at": 7000, "ended_at": 9400, "text": "I can help with that. May I have your member ID?" },
+  { "speaker": "customer", "started_at": 9800, "ended_at": 12800, "text": "It's A-X 7-7-1-0-4-5-5-2." },
+  { "speaker": "agent", "started_at": 13200, "ended_at": 15400, "text": "Thanks. Can you confirm the ZIP code you're searching from?" },
+  { "speaker": "customer", "started_at": 15700, "ended_at": 17400, "text": "9-4-1-1-0, San Francisco." },
+  { "speaker": "agent", "started_at": 17800, "ended_at": 20600, "text": "Got it. Let me pull up in-network dermatologists near you." },
+  { "speaker": "agent", "started_at": 26200, "ended_at": 30200, "text": "Alright, the closest one is Bay Dermatology on Church Street, about half a mile away." },
+  { "speaker": "customer", "started_at": 29900, "ended_at": 32200, "text": "Oh, that's really close, that's perfect." },
+  { "speaker": "agent", "started_at": 32000, "ended_at": 35800, "text": "And they're in network on your Silver HMO plan." },
+  { "speaker": "customer", "started_at": 36200, "ended_at": 38600, "text": "Do they have appointments soon, do you know?" },
+  { "speaker": "agent", "started_at": 39000, "ended_at": 42600, "text": "I can't see their live calendar, but their intake line is 4-1-5-5-5-5-0-1-8-8." },
+  { "speaker": "customer", "started_at": 43000, "ended_at": 45000, "text": "Hold on, let me grab a pen." },
+  { "speaker": "customer", "started_at": 51000, "ended_at": 52600, "text": "Okay, go ahead." },
+  { "speaker": "agent", "started_at": 53000, "ended_at": 56800, "text": "Sure. 4-1-5, 5-5-5, 0-1-8-8. Bay Dermatology, Church Street." },
+  { "speaker": "customer", "started_at": 57200, "ended_at": 59000, "text": "Got it. Do I need a referral for the HMO?" },
+  { "speaker": "agent", "started_at": 59400, "ended_at": 63200, "text": "You do. Your primary care doctor can send one over electronically, usually same day." },
+  { "speaker": "customer", "started_at": 63600, "ended_at": 65600, "text": "Okay, I'll call my PCP first then." },
+  { "speaker": "agent", "started_at": 66000, "ended_at": 69400, "text": "Sounds good. Anything else I can help you with today?" },
+  { "speaker": "customer", "started_at": 69700, "ended_at": 71200, "text": "Nope, that's it. Thanks, Marcus!" },
+  { "speaker": "agent", "started_at": 71600, "ended_at": 74000, "text": "Anytime. Take care!" }
+]

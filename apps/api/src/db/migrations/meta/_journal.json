@@ -36,6 +36,20 @@
       "when": 1783993999890,
       "tag": "0004_narrow_manta",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1784314629681,
+      "tag": "0005_futuristic_pyro",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784320904057,
+      "tag": "0006_yummy_living_mummy",
+      "breakpoints": true
     }
   ]
 }

@@ -1,13 +1,31 @@
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import { db, pool } from "./db/client.js";
 import {
   carriers,
   networks,
   plans,
-  providers,
   providerDirectories,
-  addresses,
-  networkMemberships,
 } from "./db/schema.js";
+import { ingestTranscript } from "./transcripts/ingest.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const TRANSCRIPT_SEEDS = [
+  "db/seed/01-in-network-doctor.json",
+  "db/seed/02-closest-dermatologist.json",
+  "db/seed/03-current-plan-premiums.json",
+  "db/seed/04-sprained-ankle-specialist.json",
+];
+
+async function seedTranscripts() {
+  for (const file of TRANSCRIPT_SEEDS) {
+    const raw = JSON.parse(await readFile(path.join(__dirname, file), "utf-8"));
+    const t = await ingestTranscript(raw);
+    console.log(`seeded transcript: ${t.title}`);
+  }
+}
 
 async function main() {
   // ---- Health Net of California ----
@@ -99,6 +117,9 @@ async function main() {
     .values({ title: "Health Net WholeCare HMO", carrierId: hn.id, networkId: hnWholeCare.id });
 
   console.log("seeded 1 carrier (Health Net CA)");
+
+  await seedTranscripts();
+
   await pool.end();
 }
 
