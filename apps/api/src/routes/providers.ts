@@ -5,7 +5,7 @@ import { pageParams } from "../lib/page.js";
 import { startExplore } from "../lib/explore.js";
 import { searchNpi, type NpiProvider } from "../lib/npi.js";
 import { saveProviderByNpi } from "../lib/providers.js";
-import { ResolveError } from "../lib/errors.js";
+import { ResolveError, MissingInputsError } from "../lib/errors.js";
 import { db } from "../db/client.js";
 import { agentRuns } from "../db/schema.js";
 
@@ -49,8 +49,10 @@ providersRoute.post("/", async (c) => {
 providersRoute.post("/explore", async (c) => {
   const body = await c.req.json();
   try {
-    return c.json(await startExplore(body), 202);
+    const result = await startExplore(body);
+    return c.json(result, "runId" in result ? 202 : 200);
   } catch (e) {
+    if (e instanceof MissingInputsError) return c.json({ error: "missing_inputs", missing: e.missing }, 422);
     if (e instanceof ResolveError) return c.json({ error: e.message }, 400);
     throw e;
   }

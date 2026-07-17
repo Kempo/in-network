@@ -6,35 +6,64 @@ import { createRun, markProcessing, markFinished, markFailed } from "./runs.js";
 import { buildExplorePrompt } from "./prompt.js";
 import { insertProvider } from "./providers.js";
 import { getProviderById } from "../match/provider.js";
-import { ResolveError } from "./errors.js";
+import { ResolveError, MissingInputsError } from "./errors.js";
+import { verify, type VerifyResult } from "./verification.js";
 
 export type ExploreInput = {
-  carrierId: number;
+  carrierId?: number;
   planId?: number;
   planName?: string;
   providerId?: number;
   name?: string;
-  location: string;
+  location?: string;
   city?: string;
   state?: string;
 };
 
 const sanitizePlanName = (s: string) => s.trim().replace(/\s+/g, " ");
 
-export async function startExplore(input: ExploreInput): Promise<{ runId: number }> {
+export type ExploreResult = { runId: number } | VerifyResult;
+
+export async function startExplore(input: ExploreInput): Promise<ExploreResult> {
+  let plan: typeof plans.$inferSelect | undefined;
+  if (!input.planId && input.planName && input.carrierId !== undefined) {
+    const title = sanitizePlanName(input.planName);
+    if (title) {
+      const [pl] = await db
+        .select()
+        .from(plans)
+        .where(and(eq(plans.carrierId, input.carrierId), eq(plans.title, title)))
+        .limit(1);
+      if (pl) plan = pl;
+    }
+  }
+  const cachePlanId = input.planId ?? plan?.id;
+  if (input.providerId && cachePlanId) {
+    const cached = await verify({ providerId: input.providerId, planId: cachePlanId });
+    if (cached.found) return cached;
+  }
+
+  const { carrierId } = input;
   const location = input.location?.trim();
-  if (!location) throw new ResolveError("location required");
+  if (carrierId === undefined || !location) {
+    const missing = [
+      ...(carrierId === undefined ? ["carrierId"] : []),
+      ...(!location ? ["location"] : []),
+    ];
+    throw new MissingInputsError(missing);
+  }
 
   const [dir] = await db
     .select()
     .from(providerDirectories)
-    .where(eq(providerDirectories.carrierId, input.carrierId))
+    .where(eq(providerDirectories.carrierId, carrierId))
     .limit(1);
-  if (!dir) throw new ResolveError(`No directory for carrier ${input.carrierId}`);
+  if (!dir) throw new ResolveError(`No directory for carrier ${carrierId}`);
 
   let planTitle: string;
-  let plan: typeof plans.$inferSelect | undefined;
-  if (input.planId) {
+  if (plan) {
+    planTitle = plan.title;
+  } else if (input.planId) {
     const [pl] = await db.select().from(plans).where(eq(plans.id, input.planId)).limit(1);
     if (!pl) throw new ResolveError(`Unknown plan: ${input.planId}`);
     plan = pl;
@@ -61,13 +90,14 @@ export async function startExplore(input: ExploreInput): Promise<{ runId: number
 
   const prompt = buildExplorePrompt({ directoryUrl: dir.url, instructions: dir.instructions, planTitle, location, descriptor });
   const run = await createRun(prompt);
-  void runExplore(run.id, input, prompt, planTitle, plan);
+  void runExplore(run.id, input, carrierId, prompt, planTitle, plan);
   return { runId: run.id };
 }
 
 async function runExplore(
   runId: number,
   input: ExploreInput,
+  carrierId: number,
   prompt: string,
   planTitle: string,
   plan?: typeof plans.$inferSelect
@@ -98,7 +128,7 @@ async function runExplore(
           state: findings.provider.state,
         })
       ).id;
-    const { planId, networkId } = await resolvePlan(input, planTitle, plan);
+    const { planId, networkId } = await resolvePlan(carrierId, planTitle, plan);
     const now = new Date();
     await db
       .insert(networkMemberships)
@@ -120,7 +150,7 @@ async function runExplore(
 }
 
 async function resolvePlan(
-  input: ExploreInput,
+  carrierId: number,
   planTitle: string,
   plan?: typeof plans.$inferSelect
 ): Promise<{ planId: number; networkId: number }> {
@@ -128,18 +158,18 @@ async function resolvePlan(
   let [net] = await db
     .select()
     .from(networks)
-    .where(and(eq(networks.carrierId, input.carrierId), eq(networks.title, planTitle)))
+    .where(and(eq(networks.carrierId, carrierId), eq(networks.title, planTitle)))
     .limit(1);
-  if (!net) [net] = await db.insert(networks).values({ title: planTitle, carrierId: input.carrierId }).returning();
+  if (!net) [net] = await db.insert(networks).values({ title: planTitle, carrierId }).returning();
   let [pl] = await db
     .select()
     .from(plans)
-    .where(and(eq(plans.carrierId, input.carrierId), eq(plans.title, planTitle)))
+    .where(and(eq(plans.carrierId, carrierId), eq(plans.title, planTitle)))
     .limit(1);
   if (!pl)
     [pl] = await db
       .insert(plans)
-      .values({ title: planTitle, carrierId: input.carrierId, networkId: net.id })
+      .values({ title: planTitle, carrierId, networkId: net.id })
       .returning();
   return { planId: pl.id, networkId: net.id };
 }
