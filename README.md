@@ -53,15 +53,13 @@ flowchart TD
     subgraph mcp["MCP Server (mcp/, stdio) — in-network-mcp"]
         t1["find_carrier / find_plan"]
         t2["find_provider / save_provider"]
-        t3["check_provider_plan"]
         t4["search_provider / get_search_status"]
     end
 
     subgraph api["API (apps/api, Hono :3000)"]
         r1["GET /carriers · /plans"]
         r2["GET/POST /providers"]
-        r3["GET /verify<br/>(cache, 3-day TTL)"]
-        r4["POST /providers/explore<br/>GET /providers/explore/:runId"]
+        r4["POST /providers/explore<br/>(cache-first, 3-day TTL)<br/>GET /providers/explore/:runId"]
     end
 
     subgraph agent["Agent (apps/agent, FastAPI :8000)"]
@@ -73,17 +71,16 @@ flowchart TD
     npi["CMS NPI registry (api)"]
     directory["Carrier provider<br/>directory (web)"]
 
-    client --> t1 & t2 & t3 & t4
+    client --> t1 & t2 & t4
     t1 --> r1
     t2 --> r2
-    t3 --> r3
     t4 --> r4
     r2 -->|no local match| npi
-    r4 -->|spawn run| bu
+    r4 -->|cache miss: spawn run| bu
     bu --> chromium
     chromium -->|browse| directory
     bu -->|structured findings| r4
-    r1 & r2 & r3 & r4 -->|read/write| db
+    r1 & r2 & r4 -->|read/write| db
 ```
 
 ## Database
